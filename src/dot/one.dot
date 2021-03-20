@@ -1,0 +1,14 @@
+digraph G {
+    /* Entities */
+    shortName [label="asdfasdf", shape=""]
+    longName [style=filled]
+    longName2
+
+    /* Relationships */
+    F1 -> shortName[label=".63"]
+    F1 -> longName
+    longName -> longName2
+    B -> A [headlabel = "tail"]
+
+    /* Ranks */
+}
