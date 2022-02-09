@@ -11,3 +11,39 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#root {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.graphComponent {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #222222;
+}
+
+.node {
+  fill: #444444;
+  stroke-width: 2px;
+  stroke: black;
+}
+
+.node:hover{
+  filter: drop-shadow( 0px 0px 5px #00FFFF);
+}
+
+.edge {
+  stroke-width: 2px;
+  stroke: black;
+}
+/* 
+.nodeSvg {
+  position: absolute;
+} */

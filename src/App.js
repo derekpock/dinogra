@@ -1,11 +1,13 @@
-import logo from './logo.svg';
-import oneDot from './dot/one.dot';
-import {DotParser} from './data/DotParser.js'
+// import logo from './logo.svg';
+// import oneDot from './dot/one.dot';
+// import {DotParser} from '../old/parser/DotParser.js'
+import {Graph} from './data/GraphData'
+import {GraphComponent} from './components/GraphComponent'
 import './App.css';
 
 // Derek added
 import React from 'react';
-import ReactDOM from 'react-dom';
+// import ReactDOM from 'react-dom';
 
 // function WelcomeV2(props) {
 //   return <h1>Hello again {props.name}</h1>
@@ -43,7 +45,7 @@ import ReactDOM from 'react-dom';
 //   }
 
 //   render() {
-//     if (this.state.x % 5 == 0) {
+//     if (this.state.x % 5 === 0) {
 //       return null;
 //     }
 //     return <h1 onClick={this.onClick}>Hello, {this.props.name}. {this.state.x}</h1>;
@@ -67,46 +69,56 @@ import ReactDOM from 'react-dom';
 //   [name]: value
 // });
 
-class DotInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onSubmit = this.onSubmit.bind(this);
-    this.onChange = this.onChange.bind(this);
-    this.state = {value: props.value}
-  }
+// class DotInput extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.onSubmit = this.onSubmit.bind(this);
+//     this.onChange = this.onChange.bind(this);
+//     this.state = {value: props.value}
+//   }
 
-  onSubmit(e) {
-    DotParser.parse(this.state.value);
-    this.setState({ status: "Done" });
-  }
+//   onSubmit(e) {
+//     DotParser.parse(this.state.value);
+    
+//     this.setState({ status: "Done" });
+//   }
 
-  onChange(e) {
-    this.setState({ value: e.target.value });
-  }
+//   onChange(e) {
+//     this.setState({ value: e.target.value });
+//   }
 
-  render() {
-    return <div>
-      <textarea class="dotInputArea" value={this.state.value} onChange={this.onChange}></textarea><br />
-      <input type="submit" value="Submit" onClick={this.onSubmit} />
-      {this.state.status && <div>{this.state.status}</div>}
-    </div>
-  }
-}
+//   render() {
+//     return <div>
+//       <textarea class="dotInputArea" value={this.state.value} onChange={this.onChange}></textarea><br />
+//       <input type="submit" value="Submit" onClick={this.onSubmit} />
+//       {this.state.status && <div>{this.state.status}</div>}
+//     </div>
+//   }
+// }
 
-function getFile(filePath) {
-  var result = null;
-  var xmlhttp = new XMLHttpRequest();
-  xmlhttp.open("GET", filePath, false);
-  xmlhttp.send();
-  if (xmlhttp.status === 200) {
-    result = xmlhttp.responseText;
-  }
-  return result;
-}
+// function getFile(filePath) {
+//   var result = null;
+//   var xmlhttp = new XMLHttpRequest();
+//   xmlhttp.open("GET", filePath, false);
+//   xmlhttp.send();
+//   if (xmlhttp.status === 200) {
+//     result = xmlhttp.responseText;
+//   }
+//   return result;
+// }
 
 export function App() {
-  const dotValue = getFile(oneDot);
-  let element = <DotInput value={dotValue} />
+  // const dotValue = getFile(oneDot);
+  // let element = <DotInput value={dotValue} />
+  const graphData = new Graph();
+  for(let i = 0; i < 800; i+=80) {
+    graphData.addNode({name: "NodeE" + i, shape: "ellipse", x: 100 + i, y: 100 + i});
+    graphData.addNode({name: "NodeR" + i, shape: "rectangle", x: 100 + i, y: 100 + i});
+  }
+  graphData.addEdge({name: "Edge1", source: 0, target: 1, color: "black"});
+  graphData.addEdge({name: "Edge2", source: 1, target: 1, color: "black"});
+
+  const element = <GraphComponent graphData={graphData} />;
   return element;
   // return (
   //   <div className="App">
