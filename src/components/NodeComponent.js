@@ -65,9 +65,15 @@ export class NodeComponent extends React.Component {
                     onContextMenu={this.onContextMenu}
                 />;
                 break;
-            case undefined:
-            case "ellipse":
+
             default:
+            case undefined:
+                if (this.shapeWarning === undefined) {
+                    console.warn("Shape with idx", this.props.data.idx, "has an undefined or unknown shape:", this.props.data.shape);
+                    this.shapeWarning = true;
+                }
+            // fallthrough
+            case "ellipse":
                 element = <ellipse
                     className="node"
                     rx={data.width / 2} ry={data.height / 2}

@@ -156,11 +156,11 @@ export class GraphComponent extends React.Component {
     }
 
     mouseUpOnNode(e, node) {
-        console.log(this.props.graphData);
         const creatingEdgeSource = this.state.creatingEdgeSource;
         if(creatingEdgeSource !== undefined && creatingEdgeSource !== node) {
             const newEdge = {source: creatingEdgeSource.props.data.idx, target: node.props.data.idx};
             this.props.graphData.addEdge(newEdge);
+            this.props.graphData.save();
         }
     }
 
@@ -185,6 +185,10 @@ export class GraphComponent extends React.Component {
     }
 
     stopAllMoves() {
+        if(this.movingNode !== undefined) {
+            this.props.graphData.save();
+        }
+
         this.movingNode = undefined;
         this.movingCanvas = false;
 

@@ -110,13 +110,16 @@ import React from 'react';
 export function App() {
   // const dotValue = getFile(oneDot);
   // let element = <DotInput value={dotValue} />
+
   const graphData = new Graph();
-  for(let i = 0; i < 800; i+=80) {
-    graphData.addNode({name: "NodeE" + i, shape: "ellipse", x: 100 + i, y: 100 + i});
-    graphData.addNode({name: "NodeR" + i, shape: "rectangle", x: 100 + i, y: 100 + i});
+  if(!graphData.load()) {
+    for(let i = 0; i < 800; i+=80) {
+      graphData.addNode({name: "NodeE" + i, shape: "ellipse", x: 100 + i, y: 100 + i});
+      graphData.addNode({name: "NodeR" + i, shape: "rectangle", x: 100 + i, y: 100 + i});
+    }
+    graphData.addEdge({name: "Edge1", source: 0, target: 1, color: "black"});
+    graphData.addEdge({name: "Edge2", source: 1, target: 1, color: "black"});
   }
-  graphData.addEdge({name: "Edge1", source: 0, target: 1, color: "black"});
-  graphData.addEdge({name: "Edge2", source: 1, target: 1, color: "black"});
 
   const element = <GraphComponent graphData={graphData} />;
   return element;
@@ -151,4 +154,4 @@ export function App() {
 //   What components change based on that state
 //   What parent component can own that state
 //   Parent component or another higher component?
-//   Create new copmonent solely for holding state?
+//   Create new component solely for holding state?
