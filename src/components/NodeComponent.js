@@ -1,6 +1,5 @@
 import React from 'react';
 // import ReactDOM from 'react-dom';
-import { defaultObjectValue } from '../Utilities';
 
 export class NodeComponent extends React.Component {
     constructor(props) {
@@ -10,22 +9,6 @@ export class NodeComponent extends React.Component {
         this.onMouseUp = this.onMouseUp.bind(this);
         // this.onTouchStart = this.onTouchStart.bind(this);
         this.onContextMenu = this.onContextMenu.bind(this);
-
-        if (defaultObjectValue(this.props.data, "x", 100)) {
-            console.warn("Node with name", this.props.data.name, "and idx", this.props.data.idx, "has no x component. Defaulting.");
-        }
-
-        if (defaultObjectValue(this.props.data, "y", 100)) {
-            console.warn("Node with name", this.props.data.name, "and idx", this.props.data.idx, "has no y component. Defaulting.");
-        }
-
-        if (defaultObjectValue(this.props.data, "width", 100)) {
-            console.warn("Node with name", this.props.data.name, "and idx", this.props.data.idx, "has no width component. Defaulting.");
-        }
-
-        if (defaultObjectValue(this.props.data, "height", 50)) {
-            console.warn("Node with name", this.props.data.name, "and idx", this.props.data.idx, "has no height component. Defaulting.");
-        }
     }
 
     onMouseDown(e) {
@@ -50,15 +33,20 @@ export class NodeComponent extends React.Component {
 
     render() {
         const data = this.props.data;
+        const width = data.width != null ? data.width : 100;
+        const height = data.height != null ? data.height : 50;
+        const x = data.x != null ? data.x : 100;
+        const y = data.y != null ? data.y : 100;
+        const rounding = data.rounding;
 
         let element;
-        switch (this.props.data.shape) {
+        switch (data.shape) {
             // return <rectangle width="100" height="50" style="fill:rgb(0,0,255);stroke-width:3;stroke:rgb(0,0,0)"/>;
             case "rectangle":
                 element = <rect
                     className="node"
-                    width={data.width} height={data.height}
-                    x={data.x - (data.width / 2)} y={data.y - (data.height / 2)} rx={data.rounding} ry={data.rounding}
+                    width={width} height={height}
+                    x={x - (width / 2)} y={y - (height / 2)} rx={rounding} ry={rounding}
                     onMouseDown={this.onMouseDown}
                     onMouseUp={this.onMouseUp}
                     // onTouchStart={this.onTouchStart}
@@ -69,15 +57,15 @@ export class NodeComponent extends React.Component {
             default:
             case undefined:
                 if (this.shapeWarning === undefined) {
-                    console.warn("Shape with idx", this.props.data.idx, "has an undefined or unknown shape:", this.props.data.shape);
+                    console.warn("Shape with idx", data.idx, "has an undefined or unknown shape:", data.shape);
                     this.shapeWarning = true;
                 }
             // fallthrough
             case "ellipse":
                 element = <ellipse
                     className="node"
-                    rx={data.width / 2} ry={data.height / 2}
-                    cx={data.x} cy={data.y}
+                    rx={width / 2} ry={height / 2}
+                    cx={x} cy={y}
                     onMouseDown={this.onMouseDown}
                     onMouseUp={this.onMouseUp}
                     // onTouchStart={this.onTouchStart}

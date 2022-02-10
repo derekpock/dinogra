@@ -107,22 +107,59 @@ import React from 'react';
 //   return result;
 // }
 
-export function App() {
+export class App extends React.Component {
+  constructor(props) {
+    super(props);
+    console.log("App constructing");
+
+    const graphData = new Graph();
+    const loadedFromStorage = graphData.load();
+    this.state = {
+      graphData: graphData
+    };
+
+    if (!loadedFromStorage) {
+      this.resetGraphData();
+    }
+
+    this.resetGraphData = this.resetGraphData.bind(this);
+  }
+
+  componentDidMount() {
+    console.log("App mounted");
+    window.resetGraphData = this.resetGraphData;
+  }
+
+  componentWillUnmount() {
+    console.log("App unmounting");
+    window.resetGraphData = null;
+  }
+
+  render() {
+    console.log("App rendering");
+    console.log(this.state);
+    return <GraphComponent graphData={this.state.graphData} />;
+  }
+
+  resetGraphData() {
+    this.setState(() => {
+      const graphData = new Graph();
+      for (let i = 0; i < 800; i += 80) {
+        graphData.addNode({ name: "NodeE" + i, shape: "ellipse", x: 100 + i, y: 100 + i });
+        graphData.addNode({ name: "NodeR" + i, shape: "rectangle", x: 100 + i, y: 100 + i });
+      }
+      graphData.addEdge({ name: "Edge1", source: 0, target: 1, color: "black" });
+      graphData.addEdge({ name: "Edge2", source: 1, target: 1, color: "black" });
+
+      return { graphData: graphData };
+    });
+  }
+}
+
+// export function App() {
   // const dotValue = getFile(oneDot);
   // let element = <DotInput value={dotValue} />
 
-  const graphData = new Graph();
-  if(!graphData.load()) {
-    for(let i = 0; i < 800; i+=80) {
-      graphData.addNode({name: "NodeE" + i, shape: "ellipse", x: 100 + i, y: 100 + i});
-      graphData.addNode({name: "NodeR" + i, shape: "rectangle", x: 100 + i, y: 100 + i});
-    }
-    graphData.addEdge({name: "Edge1", source: 0, target: 1, color: "black"});
-    graphData.addEdge({name: "Edge2", source: 1, target: 1, color: "black"});
-  }
-
-  const element = <GraphComponent graphData={graphData} />;
-  return element;
   // return (
   //   <div className="App">
   //     <header className="App-header">
@@ -141,7 +178,7 @@ export function App() {
   //     </header>
   //   </div>
   // );
-}
+// }
 
 // Build a static version of the display, then adapt it to interactivity
 // Do not use state at all when building static
