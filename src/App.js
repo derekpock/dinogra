@@ -1,8 +1,8 @@
 // import logo from './logo.svg';
 // import oneDot from './dot/one.dot';
 // import {DotParser} from '../old/parser/DotParser.js'
-import {Graph} from './data/GraphData'
-import {GraphComponent} from './components/GraphComponent'
+import { Graph } from './data/GraphData'
+import { GraphComponent } from './components/GraphComponent'
 import './App.css';
 
 // Derek added
@@ -79,7 +79,7 @@ import React from 'react';
 
 //   onSubmit(e) {
 //     DotParser.parse(this.state.value);
-    
+
 //     this.setState({ status: "Done" });
 //   }
 

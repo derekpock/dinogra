@@ -5,7 +5,7 @@
 // test("substringAfter null return on non-present value", () => {
 //   const input = "test string";
 //   const comp = "asdf";
-  
+
 //   const expectedResult = null;
 
 //   const actualResult = substringAfter(input, comp);

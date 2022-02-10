@@ -21,7 +21,7 @@ export class Graph {
     load() {
         const graphDataString = window.localStorage.getItem(KEY_GRAPH_DATA);
         const loadSuccess = this._load_from_string(graphDataString);
-        if(loadSuccess) {
+        if (loadSuccess) {
             console.debug("Loaded graphData from localStorage");
         }
         return loadSuccess;
