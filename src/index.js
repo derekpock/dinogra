@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import { App } from './App';
 import reportWebVitals from './reportWebVitals';
+import EventCoordinator from './events/EventCoordinator';
+
+window.evcor = new EventCoordinator();
+window.evcor.populateWindow(window);
 
 ReactDOM.render(
   <React.StrictMode>

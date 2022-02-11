@@ -7,6 +7,7 @@ import './App.css';
 
 // Derek added
 import React from 'react';
+import { registerWindowEvents, unregisterWindowEvents } from './events/WindowEvents';
 // import ReactDOM from 'react-dom';
 
 // function WelcomeV2(props) {
@@ -127,11 +128,13 @@ export class App extends React.Component {
 
   componentDidMount() {
     console.log("App mounted");
+    registerWindowEvents();
     window.resetGraphData = this.resetGraphData;
   }
 
   componentWillUnmount() {
     console.log("App unmounting");
+    unregisterWindowEvents();
     window.resetGraphData = null;
   }
 

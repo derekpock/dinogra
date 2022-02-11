@@ -13,16 +13,11 @@ export class GraphComponent extends React.Component {
         // componentDidMount
         // componentWillUnmount
 
-        this.onResize = this.onResize.bind(this);
-        this.onBlur = this.onBlur.bind(this);
+        this.recheckWindowDimPos = this.recheckWindowDimPos.bind(this);
         this.onMouseDown = this.onMouseDown.bind(this);
-        this.onMouseUp = this.onMouseUp.bind(this);
-        this.onMouseMove = this.onMouseMove.bind(this);
         this.onWheel = this.onWheel.bind(this);
         this.onTouchStart = this.onTouchStart.bind(this);
         this.onTouchMove = this.onTouchMove.bind(this);
-        this.onTouchEnd = this.onTouchEnd.bind(this);
-        this.onTouchCancel = this.onTouchCancel.bind(this);
         this.onContextMenu = this.onContextMenu.bind(this);
 
         this.updateMousePosition = this.updateMousePosition.bind(this);
@@ -48,28 +43,35 @@ export class GraphComponent extends React.Component {
     }
 
     componentDidMount() {
-        window.addEventListener("resize", this.onResize);
-        window.addEventListener("mouseup", this.onMouseUp);
-        window.addEventListener("mousemove", this.onMouseMove);
-        window.addEventListener("blur", this.onBlur);
-        window.addEventListener("touchend", this.onTouchEnd, { passive: false });
-        window.addEventListener("touchcancel", this.onTouchCancel, { passive: false });
-        window.addEventListener("touchmove", this.onTouchMove, { passive: false });
-        window.addEventListener("contextmenu", this.onContextMenu);
+        window.ceRegisterEvent(window.CEResize, this.recheckWindowDimPos);
+
+        window.ceRegisterEvent(window.CEBlur, this.stopAllMoves);
+        window.ceRegisterEvent(window.CEMouseUp, this.stopAllMoves);
+        window.ceRegisterEvent(window.CETouchEnd, this.stopAllMoves);
+        window.ceRegisterEvent(window.CETouchCancel, this.stopAllMoves);
+
+        window.ceRegisterEvent(window.CEMouseMove, this.processMoves);
+        window.ceRegisterEvent(window.CETouchMove, this.onTouchMove);
+
+        window.ceRegisterEvent(window.CEContextMenu, this.onContextMenu);
     }
 
     componentWillUnmount() {
-        window.removeEventListener("resize", this.onResize);
-        window.removeEventListener("mouseup", this.onMouseUp);
-        window.removeEventListener("mousemove", this.onMouseMove);
-        window.removeEventListener("blur", this.onBlur);
-        window.removeEventListener("touchend", this.onTouchEnd);
-        window.removeEventListener("touchcancel", this.onTouchCancel);
-        window.removeEventListener("touchmove", this.onTouchMove);
-        window.removeEventListener("contextmenu", this.onContextMenu);
+        window.ceUnregisterEvent(window.CEResize, this.recheckWindowDimPos);
+
+        window.ceUnregisterEvent(window.CEBlur, this.stopAllMoves);
+        window.ceUnregisterEvent(window.CEMouseUp, this.stopAllMoves);
+        window.ceUnregisterEvent(window.CETouchEnd, this.stopAllMoves);
+        window.ceUnregisterEvent(window.CETouchCancel, this.stopAllMoves);
+
+        // TODO work to combine "touch" and "mouse move" events into a single event.
+        window.ceUnregisterEvent(window.CEMouseMove, this.processMoves);
+        window.ceUnregisterEvent(window.CETouchMove, this.onTouchMove);
+
+        window.ceUnregisterEvent(window.CEContextMenu, this.onContextMenu);
     }
 
-    onResize(e) {
+    recheckWindowDimPos(e) {
         this.setState(function (state) {
             const widthDiff = state.windowDimension.width - window.innerWidth;
             const heightDiff = state.windowDimension.height - window.innerHeight;
@@ -84,17 +86,11 @@ export class GraphComponent extends React.Component {
     };
 
 
-    onBlur(e) { this.stopAllMoves(); }
-
     onMouseDown(e) {
         if (e.button === 0) {
             this.startCanvasMove(e);
         }
     }
-
-    onMouseUp(e) { this.stopAllMoves(); }
-
-    onMouseMove(e) { this.processMoves(e); }
 
     onWheel(e) {
         this.setState(function (state) {
@@ -127,10 +123,6 @@ export class GraphComponent extends React.Component {
             this.processMoves(e.touches[0]);
         }
     }
-
-    onTouchEnd(e) { this.stopAllMoves(); }
-
-    onTouchCancel(e) { this.stopAllMoves(); }
 
     onContextMenu(e) {
         e.preventDefault();
