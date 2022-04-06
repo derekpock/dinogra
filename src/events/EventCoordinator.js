@@ -3,6 +3,7 @@ export default class EventCoordinator {
 
     constructor() {
         this.registrations = {};
+        this.loggedEvents = {};
     }
 
     populateWindow(w) {
@@ -10,20 +11,18 @@ export default class EventCoordinator {
         w.ceRegisterEvent = this.registerEvent.bind(this);
         w.ceUnregisterEvent = this.unregisterEvent.bind(this);
 
-        w.CEResize = "Resize";
-        w.CEMouseUp = "MouseUp";
-        w.CEMouseMove = "MouseMove";
-        w.CEBlur = "Blur";
-        w.CETouchEnd = "TouchEnd";
-        w.CETouchCancel = "TouchCancel";
-        w.CETouchMove = "TouchMove";
-        w.CEContextMenu = "ContextMenu";
-        w.CENodeMouseDown = "NodeMouseDown";
-        w.CENodeMouseUp = "NodeMouseUp";
+        w.CEWindowResize = "Resize";
+        w.CELaunch = "Launch";
+        w.CEMouseMove = "Move";
 
-        w.CEBackgroundMouseDown = "BackgroundMouseDown";
-        w.CEEdgeCreationStart = "EdgeCreationStart";
-        w.CEEdgeCreationEnd = "EdgeCreationEnd";
+        w.CENodeLand = "NodeLand";  // e.ceNode
+        w.CENodeLaunch = "NodeLaunch";  // e.ceNode
+
+        w.CEGraphMouseMove = "GraphMove"; // e.ceGraphMouse
+
+        w.CEGraphDataModified = "GraphDataModified";
+
+        this.loggedEvents = [];
     }
 
     triggerEvent(event, payload) {
@@ -33,6 +32,7 @@ export default class EventCoordinator {
         }
 
         const eventRegistrations = this.registrations[event];
+        this._log_event(event, eventRegistrations);
         if (eventRegistrations == null) {
             return;
         }
@@ -80,5 +80,16 @@ export default class EventCoordinator {
 
         eventRegistrations.splice(idx, 1);
         return true;
+    }
+
+    _log_event(event, registrations) {
+        if (this.loggedEvents.includes(event)) {
+            if (registrations == null) {
+                console.debug("Triggering", event, "0 registrations");
+            } else {
+                console.debug("Triggering", event, registrations.length, "registrations");
+            }
+            // console.trace();
+        }
     }
 }

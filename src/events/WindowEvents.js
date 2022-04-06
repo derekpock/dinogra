@@ -22,11 +22,11 @@ export function unregisterWindowEvents() {
 }
 
 function onResize(e) {
-    window.ceTriggerEvent(window.CEResize, e);
+    window.ceTriggerEvent(window.CEWindowResize, e);
 }
 
 function onMouseUp(e) {
-    window.ceTriggerEvent(window.CEMouseUp, e);
+    window.ceTriggerEvent(window.CELaunch, e);
 }
 
 function onMouseMove(e) {
@@ -34,22 +34,25 @@ function onMouseMove(e) {
 }
 
 function onBlur(e) {
-    window.ceTriggerEvent(window.CEBlur, e);
+    window.ceTriggerEvent(window.CELaunch, e);
 }
 
 function onTouchEnd(e) {
-    window.ceTriggerEvent(window.CETouchEnd, e);
+    window.ceTriggerEvent(window.CELaunch, e);
 }
 
 function onTouchCancel(e) {
-    window.ceTriggerEvent(window.CETouchCancel, e);
+    window.ceTriggerEvent(window.CELaunch, e);
 }
 
 function onTouchMove(e) {
-    window.ceTriggerEvent(window.CETouchMove, e);
+    if (e.touches.length === 1) {
+        window.ceTriggerEvent(window.CEMouseMove, e.touches[0]);
+    }
 }
 
 function onContextMenu(e) {
-    window.ceTriggerEvent(window.CEContextMenu, e);
+    e.preventDefault();
+    e.stopPropagation();
 }
 

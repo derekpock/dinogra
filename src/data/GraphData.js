@@ -42,11 +42,13 @@ export class Graph {
     addNode(node) {
         const idx = this.data.nodes.push(node) - 1;
         this.data.nodes[idx].idx = idx;
+        window.ceTriggerEvent(window.CEGraphDataModified, this);
     }
 
     addEdge(edge) {
         const idx = this.data.edges.push(edge) - 1;
         this.data.edges[idx].idx = idx;
+        window.ceTriggerEvent(window.CEGraphDataModified, this);
     }
 
     removeNodeIdx(idx) {
@@ -72,6 +74,7 @@ export class Graph {
                 edge.target--;
             }
         }
+        window.ceTriggerEvent(window.CEGraphDataModified, this);
     }
 
     removeEdgeIdx(idx) {
@@ -81,6 +84,7 @@ export class Graph {
         } else {
             console.error("Tried to remove non-present edge idx", idx);
         }
+        window.ceTriggerEvent(window.CEGraphDataModified, this);
     }
 
     _load_from_string(str) {
@@ -100,6 +104,7 @@ export class Graph {
         if (!semver.satisfies(this.data.version, VERSION_SUPPORTED)) {
             console.warn("Loaded graph data is not a supported version! Continuing regardless.", this.data.version, "does not satisfy", VERSION_SUPPORTED);
         }
+        window.ceTriggerEvent(window.CEGraphDataModified, this);
         return true;
     }
 

@@ -115,32 +115,37 @@ export class App extends React.Component {
 
     const graphData = new Graph();
     const loadedFromStorage = graphData.load();
-    this.state = {
-      graphData: graphData
-    };
-
     if (!loadedFromStorage) {
       this.resetGraphData();
     }
 
     this.resetGraphData = this.resetGraphData.bind(this);
+    this.onGraphDataModified = this.onGraphDataModified.bind(this);
+
+    this.state = {
+      graphData: graphData
+    };
   }
 
   componentDidMount() {
     console.log("App mounted");
     registerWindowEvents();
     window.resetGraphData = this.resetGraphData;
+    window.ceRegisterEvent(window.CEGraphDataModified, this.onGraphDataModified);
   }
 
   componentWillUnmount() {
     console.log("App unmounting");
     unregisterWindowEvents();
     window.resetGraphData = null;
+    window.ceUnregisterEvent(window.CEGraphDataModified, this.onGraphDataModified);
+  }
+
+  onGraphDataModified(e) {
+    this.setState({ graphData: e });
   }
 
   render() {
-    console.log("App rendering");
-    console.log(this.state);
     return <GraphComponent graphData={this.state.graphData} />;
   }
 

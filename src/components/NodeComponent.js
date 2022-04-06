@@ -1,5 +1,4 @@
 import React from 'react';
-// import ReactDOM from 'react-dom';
 
 export class NodeComponent extends React.Component {
     constructor(props) {
@@ -7,28 +6,49 @@ export class NodeComponent extends React.Component {
 
         this.onMouseDown = this.onMouseDown.bind(this);
         this.onMouseUp = this.onMouseUp.bind(this);
-        // this.onTouchStart = this.onTouchStart.bind(this);
-        this.onContextMenu = this.onContextMenu.bind(this);
+
+        this.onLaunch = this.onLaunch.bind(this);
+        this.onMove = this.onMove.bind(this);
+
+        this.moving = false;
+    }
+
+    componentDidMount() {
+        window.ceRegisterEvent(window.CELaunch, this.onLaunch);
+        window.ceRegisterEvent(window.CEGraphMouseMove, this.onMove);
+    }
+
+    componentWillUnmount() {
+        window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
+        window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
     }
 
     onMouseDown(e) {
-        this.props.api.mouseDownOnNode(e, this);
+        e.ceNode = this.props.data;
+        window.ceTriggerEvent(window.CENodeLand, e);
+        this.moving = true;
+        e.stopPropagation();
     }
 
     onMouseUp(e) {
-        this.props.api.mouseUpOnNode(e, this);
+        e.ceNode = this.props.data;
+        window.ceTriggerEvent(window.CENodeLaunch, e);
+        this.onLaunch(e);
     }
 
-    // onTouchStart(e) {
-    //     console.log(e)
-    //     if (e.touches.length === 1) {
-    //         this.props.api.mouseDownOnNode(e.touches[0], this);
-    //     }
-    // }
+    onLaunch(e) {
+        if (this.moving) {
+            this.moving = false;
+            this.props.getGraphData().save();
+        }
+    }
 
-    onContextMenu(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    onMove(e) {
+        if (this.moving) {
+            this.props.data.x = e.ceGraphMouse.x;
+            this.props.data.y = e.ceGraphMouse.y;
+            window.ceTriggerEvent(window.CEGraphDataModified, this.props.getGraphData());
+        }
     }
 
     render() {
@@ -49,8 +69,6 @@ export class NodeComponent extends React.Component {
                     x={x - (width / 2)} y={y - (height / 2)} rx={rounding} ry={rounding}
                     onMouseDown={this.onMouseDown}
                     onMouseUp={this.onMouseUp}
-                    // onTouchStart={this.onTouchStart}
-                    onContextMenu={this.onContextMenu}
                 />;
                 break;
 
@@ -68,8 +86,6 @@ export class NodeComponent extends React.Component {
                     cx={x} cy={y}
                     onMouseDown={this.onMouseDown}
                     onMouseUp={this.onMouseUp}
-                    // onTouchStart={this.onTouchStart}
-                    onContextMenu={this.onContextMenu}
                 />;
         }
 
