@@ -18,7 +18,7 @@ export default class EventCoordinator {
         w.CENodeLand = "NodeLand";  // e.ceNode
         w.CENodeLaunch = "NodeLaunch";  // e.ceNode
 
-        w.CEGraphMouseMove = "GraphMove"; // e.ceGraphMouse
+        w.CEGraphMouseMove = "GraphMove"; // e.ceGraphMouse, e.ceGraphMouseLast
 
         w.CEGraphDataModified = "GraphDataModified";
 

@@ -27,6 +27,7 @@ export class GraphComponent extends React.Component {
 
         this.mousePosition = undefined;
         this.movingCanvas = false;
+        this.graphMouseLast = null;
     }
 
     componentDidMount() {
@@ -44,8 +45,8 @@ export class GraphComponent extends React.Component {
     onMouseDown(e) {
         if (e.button === 0) {
             this.startCanvasMove(e);
+            e.stopPropagation();
         }
-        e.stopPropagation();
     }
 
     onWheel(e) {
@@ -71,8 +72,8 @@ export class GraphComponent extends React.Component {
     onTouchStart(e) {
         if (e.touches.length === 1) {
             this.startCanvasMove(e.touches[0]);
+            e.stopPropagation();
         }
-        e.stopPropagation();
     }
 
     recheckWindowDimPos(e) {
@@ -99,8 +100,10 @@ export class GraphComponent extends React.Component {
             const graphX = (this.state.windowScale * e.clientX) + this.state.windowPosition.x;
             const graphY = (this.state.windowScale * e.clientY) + this.state.windowPosition.y;
 
+            e.ceGraphMouseLast = this.graphMouseLast;
             e.ceGraphMouse = { x: graphX, y: graphY };
             window.ceTriggerEvent(window.CEGraphMouseMove, e);
+            this.graphMouseLast = e.ceGraphMouse;
 
             if (this.movingCanvas) {
                 if (this.mousePosition !== undefined) {

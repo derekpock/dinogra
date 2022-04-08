@@ -150,17 +150,15 @@ export class App extends React.Component {
   }
 
   resetGraphData() {
-    this.setState(() => {
-      const graphData = new Graph();
-      for (let i = 0; i < 800; i += 80) {
-        graphData.addNode({ name: "NodeE" + i, shape: "ellipse", x: 100 + i, y: 100 + i });
-        graphData.addNode({ name: "NodeR" + i, shape: "rectangle", x: 100 + i, y: 100 + i });
-      }
-      graphData.addEdge({ name: "Edge1", source: 0, target: 1, color: "black" });
-      graphData.addEdge({ name: "Edge2", source: 1, target: 1, color: "black" });
+    const graphData = new Graph();
+    for (let i = 0; i < 800; i += 80) {
+      graphData.addNode({ name: "NodeE" + i, shape: "ellipse", x: 100 + i, y: 100 + i });
+      graphData.addNode({ name: "NodeR" + i, shape: "rectangle", x: 100 + i, y: 100 + i });
+    }
+    graphData.addEdge({ name: "Edge1", source: 0, target: 1, color: "black" });
+    graphData.addEdge({ name: "Edge2", source: 1, target: 1, color: "black" });
 
-      return { graphData: graphData };
-    });
+    this.setState({ graphData: graphData });
   }
 }
 

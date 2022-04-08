@@ -26,8 +26,11 @@ export class NodeComponent extends React.Component {
     onMouseDown(e) {
         e.ceNode = this.props.data;
         window.ceTriggerEvent(window.CENodeLand, e);
-        this.moving = true;
-        e.stopPropagation();
+
+        if (e.button === 0) {
+            this.moving = true;
+            e.stopPropagation();
+        }
     }
 
     onMouseUp(e) {
@@ -44,9 +47,11 @@ export class NodeComponent extends React.Component {
     }
 
     onMove(e) {
-        if (this.moving) {
-            this.props.data.x = e.ceGraphMouse.x;
-            this.props.data.y = e.ceGraphMouse.y;
+        if (this.moving && e.ceGraphMouseLast) {
+            const diffX = e.ceGraphMouse.x - e.ceGraphMouseLast.x;
+            const diffY = e.ceGraphMouse.y - e.ceGraphMouseLast.y;
+            this.props.data.x += diffX;
+            this.props.data.y += diffY;
             window.ceTriggerEvent(window.CEGraphDataModified, this.props.getGraphData());
         }
     }
