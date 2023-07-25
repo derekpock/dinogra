@@ -8,6 +8,9 @@ import EventCoordinator from './events/EventCoordinator';
 window.evcor = new EventCoordinator();
 window.evcor.populateWindow(window);
 
+// manifest.json provides metadata used when your web app is installed on a
+// user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+
 ReactDOM.render(
   <React.StrictMode>
     <App />
