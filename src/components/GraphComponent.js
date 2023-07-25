@@ -49,10 +49,22 @@ export class GraphComponent extends React.Component {
         }
     }
 
+    onTouchStart(e) {
+        if (e.touches.length === 1) {
+            this.startCanvasMove(e.touches[0]);
+            e.stopPropagation();
+        }
+    }
+
     onWheel(e) {
         this.setState((state) => {
             const normalizedDelta = e.deltaY * SCROLLWHEEL_SCALE_RATIO;
-            const newScale = state.windowScale * Math.exp(normalizedDelta);
+            const newScale = 
+                Math.max(
+                    Math.min(
+                        state.windowScale * Math.exp(normalizedDelta), 
+                        2e30), 
+                    2e-30);
 
             const scaleDiff = state.windowScale - newScale;
 
@@ -67,13 +79,6 @@ export class GraphComponent extends React.Component {
                 }
             };
         });
-    }
-
-    onTouchStart(e) {
-        if (e.touches.length === 1) {
-            this.startCanvasMove(e.touches[0]);
-            e.stopPropagation();
-        }
     }
 
     recheckWindowDimPos(e) {
