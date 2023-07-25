@@ -34,13 +34,17 @@ export class EdgeComponent extends React.Component {
     onMouseUp(e) {
         e.ceNode = this.props.data;
         window.ceTriggerEvent(window.CEEdgeLaunch, e);
-        this.onLaunch(e);
+        if(this.moving) {
+            this.onLaunch(e);
+        }
     }
 
     onLaunch(e) {
-        // Only callable if moving.
-        this.stopMove();
-        this.props.getGraphData().save();
+        // Calls from both onMouseUp and CELaunch are only possible if moving.
+        if(e.button === 0) {
+            this.stopMove();
+            this.props.getGraphData().save();
+        }
     }
 
     onMove(e) {

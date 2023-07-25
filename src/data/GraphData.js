@@ -31,7 +31,7 @@ export class Graph {
         const graphDataString = this._save_to_string();
         try {
             window.localStorage.setItem(KEY_GRAPH_DATA, graphDataString);
-            const kb = graphDataString.length / 1024;
+            const kb = (graphDataString.length / 1024).toFixed(3);
             console.debug("Saved graphData:", kb, "kb");
             // TODO: Compress using zlip gzip or other?
         } catch (e) {
