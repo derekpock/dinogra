@@ -13,14 +13,10 @@ export class NodeComponent extends React.Component {
         this.moving = false;
     }
 
-    componentDidMount() {
-        window.ceRegisterEvent(window.CELaunch, this.onLaunch);
-        window.ceRegisterEvent(window.CEGraphMouseMove, this.onMove);
-    }
-
     componentWillUnmount() {
-        window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
-        window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
+        if(this.moving) {
+            this.stopMove();
+        }
     }
 
     onMouseDown(e) {
@@ -28,7 +24,7 @@ export class NodeComponent extends React.Component {
         window.ceTriggerEvent(window.CENodeLand, e);
 
         if (e.button === 0) {
-            this.moving = true;
+            this.startMove();
             e.stopPropagation();
         }
     }
@@ -40,20 +36,34 @@ export class NodeComponent extends React.Component {
     }
 
     onLaunch(e) {
-        if (this.moving) {
-            this.moving = false;
-            this.props.getGraphData().save();
+        // Only callable if moving.
+        if(e.button === 0) {
+            this.stopMove();
         }
+        this.props.getGraphData().save();
     }
 
     onMove(e) {
-        if (this.moving && e.ceGraphMouseLast) {
+        // Only callable if moving.
+        if (e.ceGraphMouseLast) {
             const diffX = e.ceGraphMouse.x - e.ceGraphMouseLast.x;
             const diffY = e.ceGraphMouse.y - e.ceGraphMouseLast.y;
             this.props.data.x += diffX;
             this.props.data.y += diffY;
             window.ceTriggerEvent(window.CEGraphDataModified, this.props.getGraphData());
         }
+    }
+
+    startMove() {
+        this.moving = true;
+        window.ceRegisterEvent(window.CELaunch, this.onLaunch);
+        window.ceRegisterEvent(window.CEGraphMouseMove, this.onMove);
+    }
+
+    stopMove() {
+        this.moving = false;
+        window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
+        window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
     }
 
     render() {

@@ -17,16 +17,15 @@ export class EdgeCreating extends React.Component {
 
     componentDidMount() {
         window.ceRegisterEvent(window.CENodeLand, this.onNodeLand);
-        window.ceRegisterEvent(window.CENodeLaunch, this.onLaunch);
-        window.ceRegisterEvent(window.CELaunch, this.onLaunch);
-        window.ceRegisterEvent(window.CEGraphMouseMove, this.onMove);
     }
 
     componentWillUnmount() {
         window.ceUnregisterEvent(window.CENodeLand, this.onNodeLand);
-        window.ceUnregisterEvent(window.CENodeLaunch, this.onLaunch);
-        window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
-        window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
+        if(this.state.creatingEdgeSource != null) {
+            window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
+            window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
+            window.ceUnregisterEvent(window.CENodeLaunch, this.onLaunch);
+        }
     }
 
     onNodeLand(e) {
@@ -36,18 +35,23 @@ export class EdgeCreating extends React.Component {
         }
 
         if (e.button === 2) {
-            this.setState({
-                creatingEdgeSource: e.ceNode
+            this.setState(() => {
+                return { creatingEdgeSource: e.ceNode };
+            }, () => {
+                window.ceRegisterEvent(window.CEGraphMouseMove, this.onMove);
+                window.ceRegisterEvent(window.CELaunch, this.onLaunch);
+                window.ceRegisterEvent(window.CENodeLaunch, this.onLaunch);
             });
         }
     }
 
     onLaunch(e) {
+        // Only callable when creating edge with secondary land.
         let newEdge;
+        let creatingEdge;
         this.setState((state) => {
-            const creatingEdge = state.creatingEdgeSource != null;
+            creatingEdge = state.creatingEdgeSource != null;
             const secondaryLaunch = e.button === 2;
-
             if (creatingEdge && secondaryLaunch) {
                 const launchFromNode = e.ceNode != null;
                 const launchNotFromSourceNode = e.ceNode !== state.creatingEdgeSource;
@@ -59,19 +63,23 @@ export class EdgeCreating extends React.Component {
             }
             return {};
         }, () => {
+            // This is separate because setState needs to be reentrant (called twice, same resultant state each time).
             if (newEdge != null) {
                 this.props.getGraphData().addEdge(newEdge);
                 this.props.getGraphData().save();
+            }
+            if (creatingEdge && this.state.creatingEdgeSource == null) {
+                window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
+                window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
+                window.ceUnregisterEvent(window.CENodeLaunch, this.onLaunch);
             }
         });
     }
 
     onMove(e) {
-        this.setState((state) => {
-            if (state.creatingEdgeSource != null) {
-                return { mousePosition: e.ceGraphMouse };
-            }
-            return {};
+        // Only callable when creating edge with secondary land.
+        this.setState(() => {
+            return { mousePosition: e.ceGraphMouse };
         });
     }
 
@@ -82,7 +90,7 @@ export class EdgeCreating extends React.Component {
                 y1={this.state.creatingEdgeSource.y}
                 x2={this.state.mousePosition.x}
                 y2={this.state.mousePosition.y}
-                className="edge"
+                className="edge edgeCreating"
             />;
         }
 
