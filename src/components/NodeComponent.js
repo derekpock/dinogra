@@ -15,7 +15,7 @@ export class NodeComponent extends React.Component {
     }
 
     componentWillUnmount() {
-        if(this.moving) {
+        if (this.moving) {
             this.stopMove();
         }
     }
@@ -33,14 +33,14 @@ export class NodeComponent extends React.Component {
     onMouseUp(e) {
         e.ceNode = this.props.data;
         window.ceTriggerEvent(window.CENodeLaunch, e);
-        if(this.moving) {
+        if (this.moving) {
             this.onLaunch(e);
         }
     }
 
     onLaunch(e) {
         // Calls from both onMouseUp and CELaunch are only possible if moving.
-        if(e.button === 0) {
+        if (e.button === 0) {
             this.stopMove();
             this.props.getGraphData().save();
         }
@@ -82,7 +82,7 @@ export class NodeComponent extends React.Component {
             y2: viewBox.y2 + (height / 2)
         };
 
-        if(!this.moving && !doesPointIntersectBox(data, bufferedViewBox) && window.debugRenderAll !== true) {
+        if (!this.moving && !doesPointIntersectBox(data, bufferedViewBox) && window.debugRenderAll !== true) {
             return null;
         }
 

@@ -52,13 +52,13 @@ code {
 .edgeCreating,
 .node:hover,
 .edge:hover,
-.edgeHitbox:hover + .edge {
-  filter: drop-shadow( 0px 0px 5px #00FFFF);
+.edgeHitbox:hover+.edge {
+  filter: drop-shadow(0px 0px 5px #00FFFF);
 }
 
 .active,
 .node:active,
-.edge:active, 
-.edgeHitbox:active + .edge {
-  filter: drop-shadow( 0px 0px 5px #FFFF00);
+.edge:active,
+.edgeHitbox:active+.edge {
+  filter: drop-shadow(0px 0px 5px #FFFF00);
 }

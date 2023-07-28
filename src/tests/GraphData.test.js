@@ -1,7 +1,7 @@
 import { Graph } from '../data/GraphData'
 
 beforeEach(() => {
-    window.ceTriggerEvent = () => {};
+    window.ceTriggerEvent = () => { };
 });
 
 test("Graph.constructor: parses JSON into data field", () => {

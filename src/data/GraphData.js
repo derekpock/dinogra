@@ -39,18 +39,18 @@ export class Graph {
         }
     }
 
-    addNode(node, suppressEvent=false) {
+    addNode(node, suppressEvent = false) {
         const idx = this.data.nodes.push(node) - 1;
         this.data.nodes[idx].idx = idx;
-        if(!suppressEvent) {
+        if (!suppressEvent) {
             window.ceTriggerEvent(window.CEGraphDataModified, this);
         }
     }
 
-    addEdge(edge, suppressEvent=false) {
+    addEdge(edge, suppressEvent = false) {
         const idx = this.data.edges.push(edge) - 1;
         this.data.edges[idx].idx = idx;
-        if(!suppressEvent) {
+        if (!suppressEvent) {
             window.ceTriggerEvent(window.CEGraphDataModified, this);
         }
     }

@@ -21,7 +21,7 @@ export class EdgeCreating extends React.Component {
 
     componentWillUnmount() {
         window.ceUnregisterEvent(window.CENodeLand, this.onNodeLand);
-        if(this.state.creatingEdgeSource != null) {
+        if (this.state.creatingEdgeSource != null) {
             window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
             window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
             window.ceUnregisterEvent(window.CENodeLaunch, this.onLaunch);

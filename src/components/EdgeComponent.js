@@ -17,7 +17,7 @@ export class EdgeComponent extends React.Component {
     }
 
     componentWillUnmount() {
-        if(this.moving) {
+        if (this.moving) {
             this.stopMove();
         }
     }
@@ -35,14 +35,14 @@ export class EdgeComponent extends React.Component {
     onMouseUp(e) {
         e.ceNode = this.props.data;
         window.ceTriggerEvent(window.CEEdgeLaunch, e);
-        if(this.moving) {
+        if (this.moving) {
             this.onLaunch(e);
         }
     }
 
     onLaunch(e) {
         // Calls from both onMouseUp and CELaunch are only possible if moving.
-        if(e.button === 0) {
+        if (e.button === 0) {
             this.stopMove();
             this.props.getGraphData().save();
         }
@@ -89,7 +89,7 @@ export class EdgeComponent extends React.Component {
         const sourceNode = graphData.nodes[data.source];
         const targetNode = graphData.nodes[data.target];
 
-        if(!this.moving && !doesLineIntersectBox(sourceNode, targetNode, this.props.viewBox) && window.debugRenderAll !== true) {
+        if (!this.moving && !doesLineIntersectBox(sourceNode, targetNode, this.props.viewBox) && window.debugRenderAll !== true) {
             return null;
         }
 

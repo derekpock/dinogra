@@ -59,11 +59,11 @@ export class GraphComponent extends React.Component {
     onWheel(e) {
         this.setState((state) => {
             const normalizedDelta = e.deltaY * SCROLLWHEEL_SCALE_RATIO;
-            const newScale = 
+            const newScale =
                 Math.max(
                     Math.min(
-                        state.windowScale * Math.exp(normalizedDelta), 
-                        2e30), 
+                        state.windowScale * Math.exp(normalizedDelta),
+                        2e30),
                     2e-30);
 
             const scaleDiff = state.windowScale - newScale;

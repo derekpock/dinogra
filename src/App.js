@@ -168,14 +168,14 @@ export class App extends React.Component {
   populateGraphData(count = 1000) {
     const graphData = new Graph();
     for (let i = 0; i < (80 * count); i += 80) {
-      if(i%(80*(count / 100)) === 0) {
-        console.debug("Creating edge batches", i/(80*(count / 100)) + 1, "of 100");
+      if (i % (80 * (count / 100)) === 0) {
+        console.debug("Creating edge batches", i / (80 * (count / 100)) + 1, "of 100");
       }
       graphData.addNode({ name: "NodeE" + i, shape: "ellipse", x: 100 + i, y: 100 + i }, true);
       graphData.addNode({ name: "NodeR" + i, shape: "rectangle", x: 100 + i, y: 100 + i }, true);
-      graphData.addEdge({ name: "EdgeER" + i, source: (2*(i/80)), target: (2*(i/80))+1, color: "black" }, true);
-      if(i !== 0) {
-        graphData.addEdge({ name: "EdgeERB" + i, source: (2*(i/80))-1, target: (2*(i/80)), color: "red" }, true);
+      graphData.addEdge({ name: "EdgeER" + i, source: (2 * (i / 80)), target: (2 * (i / 80)) + 1, color: "black" }, true);
+      if (i !== 0) {
+        graphData.addEdge({ name: "EdgeERB" + i, source: (2 * (i / 80)) - 1, target: (2 * (i / 80)), color: "red" }, true);
       }
     }
 

@@ -1,5 +1,4 @@
 import { defaultObjectValue, doesPointIntersectBox, doesLineIntersectBox } from '../Utilities';
-import { checkIntersection } from 'line-intersect';
 
 
 describe("defaultObjectValue", () => {
@@ -8,24 +7,24 @@ describe("defaultObjectValue", () => {
         defaultObjectValue(x, "myKey", "newValue");
         expect(x.myKey).toEqual("value");
     });
-    
+
     test("adds non-existant key with default value", () => {
         let x = { myKey: "value" };
         defaultObjectValue(x, "myName", "newValue");
         expect(x.myName).toEqual("newValue");
     });
-    
+
     test("adds non-existant key with array value", () => {
         let x = { myKey: "value" };
         defaultObjectValue(x, "myName", []);
         expect(x.myName).toEqual([]);
         expect(x.myName.length).toEqual(0);
-    });    
+    });
 });
 
 describe("doesPointIntersectBox", () => {
     test("point in box", () => {
-        expect(doesPointIntersectBox({x: 1, y: 1}, {x1: 0, y1: 0, x2: 2, y2: 2})).toEqual(true);
+        expect(doesPointIntersectBox({ x: 1, y: 1 }, { x1: 0, y1: 0, x2: 2, y2: 2 })).toEqual(true);
     });
 
     test.each([
@@ -38,7 +37,7 @@ describe("doesPointIntersectBox", () => {
         [-1, 1],    // west
         [-1, -1]    // north-west
     ])("point (%d, %d) outside of box", (paramX, paramY) => {
-        expect(doesPointIntersectBox({x: paramX, y: paramY}, {x1: 0, y1: 0, x2: 2, y2: 2})).toEqual(false);
+        expect(doesPointIntersectBox({ x: paramX, y: paramY }, { x1: 0, y1: 0, x2: 2, y2: 2 })).toEqual(false);
     });
 });
 
@@ -55,6 +54,6 @@ describe("doesLineIntersectBox", () => {
         [-10, 1, 10, 1],    // w to e
         [-10, -10, 10, 10]  // nw to se
     ])("line from (%d, %d) to (%d, %d) intersects box", (x1, y1, x2, y2) => {
-        expect(doesLineIntersectBox({x: x1, y: y1}, {x: x2, y: y2}, {x1: -2, y1: -2, x2: 2, y2: 2})).toEqual(true);
+        expect(doesLineIntersectBox({ x: x1, y: y1 }, { x: x2, y: y2 }, { x1: -2, y1: -2, x2: 2, y2: 2 })).toEqual(true);
     });
 });

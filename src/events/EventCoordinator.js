@@ -92,7 +92,7 @@ export default class EventCoordinator {
             } else {
                 console.debug("Triggering", event, registrations.length, "registrations");
             }
-            if(w.ceLogTrace === true) {
+            if (w.ceLogTrace === true) {
                 console.trace();
             }
         }
