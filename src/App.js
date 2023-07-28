@@ -133,6 +133,7 @@ export class App extends React.Component {
     registerWindowEvents();
     window.resetGraphData = this.resetGraphData;
     window.populateGraphData = this.populateGraphData;
+    window.debugRenderAll = false;
     window.ceRegisterEvent(window.CEGraphDataModified, this.onGraphDataModified);
   }
 

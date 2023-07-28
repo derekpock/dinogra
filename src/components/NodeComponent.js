@@ -1,4 +1,5 @@
 import React from 'react';
+import { doesPointIntersectBox } from '../Utilities';
 
 export class NodeComponent extends React.Component {
     constructor(props) {
@@ -70,8 +71,21 @@ export class NodeComponent extends React.Component {
 
     render() {
         const data = this.props.data;
+        const viewBox = this.props.viewBox;
         const width = data.width != null ? data.width : 100;
         const height = data.height != null ? data.height : 50;
+
+        const bufferedViewBox = {
+            x1: viewBox.x1 - (width / 2),
+            y1: viewBox.y1 - (height / 2),
+            x2: viewBox.x2 + (width / 2),
+            y2: viewBox.y2 + (height / 2)
+        };
+
+        if(!this.moving && !doesPointIntersectBox(data, bufferedViewBox) && window.debugRenderAll !== true) {
+            return null;
+        }
+
         const x = data.x != null ? data.x : 100;
         const y = data.y != null ? data.y : 100;
         const rounding = data.rounding;

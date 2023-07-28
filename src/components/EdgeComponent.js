@@ -1,4 +1,5 @@
 import React from 'react';
+import { doesLineIntersectBox } from '../Utilities';
 // import ReactDOM from 'react-dom';
 
 export class EdgeComponent extends React.Component {
@@ -87,6 +88,10 @@ export class EdgeComponent extends React.Component {
 
         const sourceNode = graphData.nodes[data.source];
         const targetNode = graphData.nodes[data.target];
+
+        if(!this.moving && !doesLineIntersectBox(sourceNode, targetNode, this.props.viewBox) && window.debugRenderAll !== true) {
+            return null;
+        }
 
         const x1 = sourceNode.x != null ? sourceNode.x : 0;
         const y1 = sourceNode.y != null ? sourceNode.y : 0;

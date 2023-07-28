@@ -141,17 +141,24 @@ export class GraphComponent extends React.Component {
             return <div>Undefined GraphData</div>;
         }
 
+        const viewBox = {
+            x1: this.state.windowPosition.x,
+            y1: this.state.windowPosition.y,
+            x2: this.state.windowPosition.x + (this.state.windowDimension.width * this.state.windowScale),
+            y2: this.state.windowPosition.y + (this.state.windowDimension.height * this.state.windowScale)
+        };
+
         const edgeComponents = graphData.data.edges.map((edge) => {
-            return <EdgeComponent key={edge.idx} data={edge} getGraphData={this.getGraphData} />;
+            return <EdgeComponent key={edge.idx} data={edge} getGraphData={this.getGraphData} viewBox={viewBox} />;
         });
 
         const nodeComponents = graphData.data.nodes.map((node) => {
-            return <NodeComponent key={node.idx} data={node} getGraphData={this.getGraphData} />;
+            return <NodeComponent key={node.idx} data={node} getGraphData={this.getGraphData} viewBox={viewBox} />;
         });
 
         const edgeCreating = <EdgeCreating getGraphData={this.getGraphData} />;
 
-        const viewBox =
+        const viewBoxString =
             this.state.windowPosition.x + " " +
             this.state.windowPosition.y + " " +
             (this.state.windowDimension.width * this.state.windowScale) + " " +
@@ -162,7 +169,7 @@ export class GraphComponent extends React.Component {
             onMouseDown={this.onMouseDown}
             onTouchStart={this.onTouchStart}
             className="graphComponent"
-            viewBox={viewBox}>
+            viewBox={viewBoxString}>
             {edgeComponents}
             {edgeCreating}
             {nodeComponents}
