@@ -9,14 +9,29 @@ test("EventCoordinator.populateWindow: events should be accessible", () => {
     const evcor = new EventCoordinator();
     evcor.populateWindow(obj);
 
-    expect(obj).toHaveProperty("test", "test")
-    expect(obj).toHaveProperty("CEMouseUp", "MouseUp");
+    expect(obj).toHaveProperty("test", "test");
+
+    expect(obj).toHaveProperty("CEWindowResize", "Resize");
+    expect(obj).toHaveProperty("CELaunch", "Launch");
+    expect(obj).toHaveProperty("CEMouseMove", "Move");
+
+    expect(obj).toHaveProperty("CENodeLand", "NodeLand");
+    expect(obj).toHaveProperty("CENodeLaunch", "NodeLaunch");
+
+    expect(obj).toHaveProperty("CEEdgeLand", "EdgeLand");
+    expect(obj).toHaveProperty("CEEdgeLaunch", "EdgeLaunch");
+
+    expect(obj).toHaveProperty("CEGraphMouseMove", "GraphMove");
+    expect(obj).toHaveProperty("CEGraphDataModified", "GraphDataModified");
 });
 
 test("EventCoordinator.registerEvent: first registration creates array", () => {
     const evcor = new EventCoordinator();
+    const w = {};
+    evcor.populateWindow(w);
+
     const callable = (_) => { };
-    evcor.registerEvent(CEDummyEvent, callable);
+    w.ceRegisterEvent(CEDummyEvent, callable);
 
     expect(evcor.registrations).toHaveProperty(CEDummyEvent);
     expect(evcor.registrations[CEDummyEvent]).toContain(callable);
@@ -24,10 +39,13 @@ test("EventCoordinator.registerEvent: first registration creates array", () => {
 
 test("EventCoordinator.registerEvent: second registration maintains array", () => {
     const evcor = new EventCoordinator();
+    const w = {};
+    evcor.populateWindow(w);
+
     const callable1 = (_) => { };
     const callable2 = (_) => { console.debug("TestCallableRan"); };
-    evcor.registerEvent(CEDummyEvent, callable1);
-    evcor.registerEvent(CEDummyEvent, callable2);
+    w.ceRegisterEvent(CEDummyEvent, callable1);
+    w.ceRegisterEvent(CEDummyEvent, callable2);
 
     expect(evcor.registrations).toHaveProperty(CEDummyEvent);
     expect(evcor.registrations[CEDummyEvent]).toContain(callable1);
@@ -36,9 +54,12 @@ test("EventCoordinator.registerEvent: second registration maintains array", () =
 
 test("EventCoordinator.registerEvent: dupe registrations denied", () => {
     const evcor = new EventCoordinator();
+    const w = {};
+    evcor.populateWindow(w);
+
     const callable = (_) => { };
-    evcor.registerEvent(CEDummyEvent, callable);
-    evcor.registerEvent(CEDummyEvent, callable);
+    w.ceRegisterEvent(CEDummyEvent, callable);
+    w.ceRegisterEvent(CEDummyEvent, callable);
 
     expect(evcor.registrations).toHaveProperty(CEDummyEvent);
     expect(evcor.registrations[CEDummyEvent]).toContain(callable);
@@ -47,19 +68,25 @@ test("EventCoordinator.registerEvent: dupe registrations denied", () => {
 
 test("EventCoordinator.unregisterEvent: no registrations for event", () => {
     const evcor = new EventCoordinator();
+    const w = {};
+    evcor.populateWindow(w);
+
     const callable = (_) => { };
 
-    const result = evcor.unregisterEvent(CEDummyEvent, callable);
+    const result = w.ceUnregisterEvent(CEDummyEvent, callable);
 
     expect(result).toBe(false);
 });
 
 test("EventCoordinator.unregisterEvent: callable not found for event", () => {
     const evcor = new EventCoordinator();
+    const w = {};
+    evcor.populateWindow(w);
+
     const callable1 = (_) => { };
     const callable2 = (_) => { };
-    evcor.registerEvent(CEDummyEvent, callable1);
-    const result = evcor.unregisterEvent(CEDummyEvent, callable2);
+    w.ceRegisterEvent(CEDummyEvent, callable1);
+    const result = w.ceUnregisterEvent(CEDummyEvent, callable2);
 
     expect(result).toBe(false);
     expect(evcor.registrations[CEDummyEvent]).toContain(callable1);
@@ -67,9 +94,12 @@ test("EventCoordinator.unregisterEvent: callable not found for event", () => {
 
 test("EventCoordinator.unregisterEvent: successful unregistration", () => {
     const evcor = new EventCoordinator();
+    const w = {};
+    evcor.populateWindow(w);
+
     const callable = (_) => { };
-    evcor.registerEvent(CEDummyEvent, callable);
-    const result = evcor.unregisterEvent(CEDummyEvent, callable);
+    w.ceRegisterEvent(CEDummyEvent, callable);
+    const result = w.ceUnregisterEvent(CEDummyEvent, callable);
 
     expect(result).toBe(true);
     expect(evcor.registrations[CEDummyEvent]).toHaveLength(0);
@@ -77,7 +107,10 @@ test("EventCoordinator.unregisterEvent: successful unregistration", () => {
 
 test("EventCoordinator.triggerEvent: no registrations", () => {
     const evcor = new EventCoordinator();
-    evcor.triggerEvent(CEDummyEvent, {});
+    const w = {};
+    evcor.populateWindow(w);
+
+    w.ceTriggerEvent(CEDummyEvent, {});
 });
 
 test("EventCoordinator.triggerEvent: registrations receive payload", () => {
@@ -87,10 +120,13 @@ test("EventCoordinator.triggerEvent: registrations receive payload", () => {
     const callable2 = (payload) => { callable2Payload = payload; };
 
     const evcor = new EventCoordinator();
-    evcor.registerEvent(CEDummyEvent, callable1);
-    evcor.registerEvent(CEDummyEvent, callable2);
+    const w = {};
+    evcor.populateWindow(w);
 
-    evcor.triggerEvent(CEDummyEvent, { x: { y: 1 } });
+    w.ceRegisterEvent(CEDummyEvent, callable1);
+    w.ceRegisterEvent(CEDummyEvent, callable2);
+
+    w.ceTriggerEvent(CEDummyEvent, { x: { y: 1 } });
 
     expect(callable1Payload).toEqual({ x: { y: 1 } });
     expect(callable2Payload).toEqual({ x: { y: 1 } });

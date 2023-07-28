@@ -1,5 +1,9 @@
 import { Graph } from '../data/GraphData'
 
+beforeEach(() => {
+    window.ceTriggerEvent = () => {};
+});
+
 test("Graph.constructor: parses JSON into data field", () => {
     const json = `{"x": "1234", "y": 1234, "z": [1, 2, 3]}`;
     let g = new Graph(json);

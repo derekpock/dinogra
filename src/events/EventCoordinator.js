@@ -3,11 +3,10 @@ export default class EventCoordinator {
 
     constructor() {
         this.registrations = {};
-        this.loggedEvents = {};
     }
 
     populateWindow(w) {
-        w.ceTriggerEvent = this.triggerEvent.bind(this);
+        w.ceTriggerEvent = this.triggerEvent.bind(this, w);
         w.ceRegisterEvent = this.registerEvent.bind(this);
         w.ceUnregisterEvent = this.unregisterEvent.bind(this);
 
@@ -22,20 +21,21 @@ export default class EventCoordinator {
         w.CEEdgeLaunch = "EdgeLaunch";  // e.ceEdge
 
         w.CEGraphMouseMove = "GraphMove"; // e.ceGraphMouse, e.ceGraphMouseLast
-
         w.CEGraphDataModified = "GraphDataModified";
 
-        this.loggedEvents = [];
+        w.ceLogTrace = false;
+        w.ceLogAllEvents = false;
+        w.ceLoggedEvents = [];
     }
 
-    triggerEvent(event, payload) {
+    triggerEvent(w, event, payload) {
         if (event == null) {
             console.error("Trying to trigger null event with payload", payload);
             return;
         }
 
         const eventRegistrations = this.registrations[event];
-        this._log_event(event, eventRegistrations);
+        this._log_event(w, event, eventRegistrations);
         if (eventRegistrations == null) {
             return;
         }
@@ -85,14 +85,16 @@ export default class EventCoordinator {
         return true;
     }
 
-    _log_event(event, registrations) {
-        if (this.loggedEvents.includes(event)) {
+    _log_event(w, event, registrations) {
+        if (w.ceLogAllEvents === true || w.ceLoggedEvents.includes(event)) {
             if (registrations == null) {
                 console.debug("Triggering", event, "0 registrations");
             } else {
                 console.debug("Triggering", event, registrations.length, "registrations");
             }
-            // console.trace();
+            if(w.ceLogTrace === true) {
+                console.trace();
+            }
         }
     }
 }
