@@ -120,6 +120,7 @@ export class App extends React.Component {
     }
 
     this.resetGraphData = this.resetGraphData.bind(this);
+    this.populateGraphData = this.populateGraphData.bind(this);
     this.onGraphDataModified = this.onGraphDataModified.bind(this);
 
     this.state = {
@@ -131,6 +132,7 @@ export class App extends React.Component {
     console.log("App mounted");
     registerWindowEvents();
     window.resetGraphData = this.resetGraphData;
+    window.populateGraphData = this.populateGraphData;
     window.ceRegisterEvent(window.CEGraphDataModified, this.onGraphDataModified);
   }
 
@@ -138,6 +140,7 @@ export class App extends React.Component {
     console.log("App unmounting");
     unregisterWindowEvents();
     window.resetGraphData = null;
+    window.populateGraphData = null;
     window.ceUnregisterEvent(window.CEGraphDataModified, this.onGraphDataModified);
   }
 
@@ -158,6 +161,24 @@ export class App extends React.Component {
     graphData.addEdge({ name: "Edge1", source: 0, target: 1, color: "black" });
     graphData.addEdge({ name: "Edge2", source: 1, target: 1, color: "black" });
 
+    this.setState({ graphData: graphData });
+  }
+
+  populateGraphData(count = 1000) {
+    const graphData = new Graph();
+    for (let i = 0; i < (80 * count); i += 80) {
+      if(i%(80*(count / 100)) === 0) {
+        console.debug("Creating edge batches", i/(80*(count / 100)) + 1, "of 100");
+      }
+      graphData.addNode({ name: "NodeE" + i, shape: "ellipse", x: 100 + i, y: 100 + i }, true);
+      graphData.addNode({ name: "NodeR" + i, shape: "rectangle", x: 100 + i, y: 100 + i }, true);
+      graphData.addEdge({ name: "EdgeER" + i, source: (2*(i/80)), target: (2*(i/80))+1, color: "black" }, true);
+      if(i !== 0) {
+        graphData.addEdge({ name: "EdgeERB" + i, source: (2*(i/80))-1, target: (2*(i/80)), color: "red" }, true);
+      }
+    }
+
+    graphData.addEdge({ name: "EdgeE", source: 0, target: 10, color: "black" });
     this.setState({ graphData: graphData });
   }
 }
