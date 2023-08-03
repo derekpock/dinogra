@@ -62,3 +62,21 @@ code {
 .edgeHitbox:active+.edge {
   filter: drop-shadow(0px 0px 5px #FFFF00);
 }
+
+.graphSidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100px;
+  background-color: #0000ff40;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.graphSidebar button {
+  margin: 10px;
+  padding: 10px 0px;
+  user-select: none;
+}

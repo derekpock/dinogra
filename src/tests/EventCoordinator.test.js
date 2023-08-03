@@ -17,6 +17,7 @@ test("EventCoordinator.populateWindow: events should be accessible", () => {
 
     expect(obj).toHaveProperty("CENodeLand", "NodeLand");
     expect(obj).toHaveProperty("CENodeLaunch", "NodeLaunch");
+    expect(obj).toHaveProperty("CENodeCreated", "NodeCreated");
 
     expect(obj).toHaveProperty("CEEdgeLand", "EdgeLand");
     expect(obj).toHaveProperty("CEEdgeLaunch", "EdgeLaunch");

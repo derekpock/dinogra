@@ -44,6 +44,7 @@ export class Graph {
         this.data.nodes[idx].idx = idx;
         if (!suppressEvent) {
             window.ceTriggerEvent(window.CEGraphDataModified, this);
+            window.ceTriggerEvent(window.CENodeCreated, node);
         }
     }
 

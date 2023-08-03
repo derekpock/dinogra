@@ -3,6 +3,7 @@
 // import {DotParser} from '../old/parser/DotParser.js'
 import { Graph } from './data/GraphData'
 import { GraphComponent } from './components/GraphComponent'
+import { NewNodeButton } from './components/Sidebar/NewNodeButton';
 import './App.css';
 
 // Derek added
@@ -150,7 +151,12 @@ export class App extends React.Component {
   }
 
   render() {
-    return <GraphComponent graphData={this.state.graphData} />;
+    return <>
+      <GraphComponent graphData={this.state.graphData} />
+      <div className="graphSidebar">
+        <NewNodeButton graphData={this.state.graphData} />
+      </div>
+    </>
   }
 
   resetGraphData() {

@@ -18,6 +18,7 @@ export class GraphComponent extends React.Component {
         this.calculateGraphMouse = this.calculateGraphMouse.bind(this);
         this.stopAllMoves = this.stopAllMoves.bind(this);
         this.getGraphData = this.getGraphData.bind(this);
+        this.moveTo = this.moveTo.bind(this);
 
         this.state = {
             windowDimension: { width: window.innerWidth, height: window.innerHeight },
@@ -34,12 +35,14 @@ export class GraphComponent extends React.Component {
         window.ceRegisterEvent(window.CEWindowResize, this.recheckWindowDimPos);
         window.ceRegisterEvent(window.CELaunch, this.stopAllMoves);
         window.ceRegisterEvent(window.CEMouseMove, this.calculateGraphMouse);
+        window.ceRegisterEvent(window.CENodeCreated, this.moveTo);
     }
 
     componentWillUnmount() {
         window.ceUnregisterEvent(window.CEWindowResize, this.recheckWindowDimPos);
         window.ceUnregisterEvent(window.CELaunch, this.stopAllMoves);
         window.ceUnregisterEvent(window.CEMouseMove, this.calculateGraphMouse);
+        window.ceUnregisterEvent(window.CENodeCreated, this.moveTo);
     }
 
     onMouseDown(e) {
@@ -134,6 +137,22 @@ export class GraphComponent extends React.Component {
     }
 
     getGraphData() { return this.props.graphData; }
+
+    moveTo(e) {
+        if (e == null || e.x == null || e.y == null) {
+            console.warn("Invalid moveTo payload:", e);
+            return;
+        }
+
+        this.setState((state) => {
+            return {
+                windowPosition: {
+                    x: e.x - (state.windowDimension.width * state.windowScale) / 2,
+                    y: e.y - (state.windowDimension.height * state.windowScale) / 2
+                }
+            };
+        });
+    }
 
     render() {
         const graphData = this.props.graphData;
