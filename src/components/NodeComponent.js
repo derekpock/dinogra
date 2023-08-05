@@ -12,11 +12,16 @@ export class NodeComponent extends React.Component {
         this.onMove = this.onMove.bind(this);
 
         this.moving = false;
+        this.landed = false;
     }
 
     componentWillUnmount() {
         if (this.moving) {
             this.stopMove();
+        }
+
+        if (this.landed) {  // Moving implies landed. May be landed without moving.
+            window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
         }
     }
 
@@ -28,22 +33,33 @@ export class NodeComponent extends React.Component {
             this.startMove();
             e.stopPropagation();
         }
+        this.landed = true;
+        window.ceRegisterEvent(window.CELaunch, this.onLaunch);
     }
 
     onMouseUp(e) {
         e.ceNode = this.props.data;
         window.ceTriggerEvent(window.CENodeLaunch, e);
-        if (this.moving) {
-            this.onLaunch(e);
+
+        if (this.landed && e.button === 1) {
+            this.props.getGraphData().removeNodeIdx(this.props.data.idx);
+            this.props.getGraphData().save();
         }
+
+        this.onLaunch(e);
     }
 
     onLaunch(e) {
-        // Calls from both onMouseUp and CELaunch are only possible if moving.
-        if (e.button === 0) {
+        if (this.landed) {  // Moving implies landed. May be landed without moving.
+            window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
+        }
+
+        if (this.moving && e.button === 0) {
             this.stopMove();
             this.props.getGraphData().save();
         }
+
+        this.landed = false;
     }
 
     onMove(e) {
@@ -59,21 +75,19 @@ export class NodeComponent extends React.Component {
 
     startMove() {
         this.moving = true;
-        window.ceRegisterEvent(window.CELaunch, this.onLaunch);
         window.ceRegisterEvent(window.CEGraphMouseMove, this.onMove);
     }
 
     stopMove() {
         this.moving = false;
-        window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
         window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
     }
 
     render() {
         const data = this.props.data;
         const viewBox = this.props.viewBox;
-        const width = data.width != null ? data.width : 100;
-        const height = data.height != null ? data.height : 50;
+        const width = data.width;
+        const height = data.height;
 
         const bufferedViewBox = {
             x1: viewBox.x1 - (width / 2),
@@ -86,8 +100,8 @@ export class NodeComponent extends React.Component {
             return null;
         }
 
-        const x = data.x != null ? data.x : 100;
-        const y = data.y != null ? data.y : 100;
+        const x = data.x;
+        const y = data.y;
         const rounding = data.rounding;
 
         let element;

@@ -14,11 +14,16 @@ export class EdgeComponent extends React.Component {
         this.onMove = this.onMove.bind(this);
 
         this.moving = false;
+        this.landed = false;
     }
 
     componentWillUnmount() {
         if (this.moving) {
             this.stopMove();
+        }
+
+        if (this.landed) {  // Moving implies landed. May be landed without moving.
+            window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
         }
     }
 
@@ -30,22 +35,33 @@ export class EdgeComponent extends React.Component {
             this.startMove();
             e.stopPropagation();
         }
+        this.landed = true;
+        window.ceRegisterEvent(window.CELaunch, this.onLaunch);
     }
 
     onMouseUp(e) {
         e.ceNode = this.props.data;
         window.ceTriggerEvent(window.CEEdgeLaunch, e);
-        if (this.moving) {
-            this.onLaunch(e);
+
+        if (this.landed && e.button === 1) {
+            this.props.getGraphData().removeEdgeIdx(this.props.data.idx);
+            this.props.getGraphData().save();
         }
+
+        this.onLaunch(e);
     }
 
     onLaunch(e) {
-        // Calls from both onMouseUp and CELaunch are only possible if moving.
-        if (e.button === 0) {
+        if (this.landed) {  // Moving implies landed. May be landed without moving.
+            window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
+        }
+
+        if (this.moving && e.button === 0) {
             this.stopMove();
             this.props.getGraphData().save();
         }
+
+        this.landed = false;
     }
 
     onMove(e) {
@@ -60,11 +76,11 @@ export class EdgeComponent extends React.Component {
             const sourceNode = graphData.nodes[this.props.data.source];
             const targetNode = graphData.nodes[this.props.data.target];
 
-            sourceNode.x = (sourceNode.x != null ? sourceNode.x : 0) + diffX;
-            sourceNode.y = (sourceNode.y != null ? sourceNode.y : 0) + diffY;
+            sourceNode.x = sourceNode.x + diffX;
+            sourceNode.y = sourceNode.y + diffY;
 
-            targetNode.x = (targetNode.x != null ? targetNode.x : 0) + diffX;
-            targetNode.y = (targetNode.y != null ? targetNode.y : 0) + diffY;
+            targetNode.x = targetNode.x + diffX;
+            targetNode.y = targetNode.y + diffY;
 
             window.ceTriggerEvent(window.CEGraphDataModified, this.props.getGraphData());
         }
@@ -72,13 +88,11 @@ export class EdgeComponent extends React.Component {
 
     startMove() {
         this.moving = true;
-        window.ceRegisterEvent(window.CELaunch, this.onLaunch);
         window.ceRegisterEvent(window.CEGraphMouseMove, this.onMove);
     }
 
     stopMove() {
         this.moving = false;
-        window.ceUnregisterEvent(window.CELaunch, this.onLaunch);
         window.ceUnregisterEvent(window.CEGraphMouseMove, this.onMove);
     }
 
@@ -93,12 +107,13 @@ export class EdgeComponent extends React.Component {
             return null;
         }
 
-        const x1 = sourceNode.x != null ? sourceNode.x : 0;
-        const y1 = sourceNode.y != null ? sourceNode.y : 0;
-        const x2 = targetNode.x != null ? targetNode.x : 0;
-        const y2 = targetNode.y != null ? targetNode.y : 0;
+        const x1 = sourceNode.x;
+        const y1 = sourceNode.y;
+        const x2 = targetNode.x;
+        const y2 = targetNode.y;
         const stroke = data.color;
 
+        // TODO: edge hitbox makes selecting edges very close together difficult.
         return <>
             <line
                 className="edgeHitbox"
