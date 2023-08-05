@@ -3,6 +3,8 @@ export default class EventCoordinator {
 
     constructor() {
         this.registrations = {};
+        this.triggeringEvent = null;
+        this.pendingModifications = []; // object: func, event, callable
     }
 
     populateWindow(w) {
@@ -41,10 +43,27 @@ export default class EventCoordinator {
             return;
         }
 
+        this.triggeringEvent = event;
         eventRegistrations.forEach((callable) => { callable(payload); });
+        this.triggeringEvent = null;
+
+        this.pendingModifications.forEach((obj) => {
+            obj.func(obj.event, obj.callable);
+        });
+        if (this.pendingModifications.length !== 0) {
+            console.debug("Completed", this.pendingModifications.length, "pending operations after triggered event.");
+        }
+        this.pendingModifications = [];
     }
 
     registerEvent(event, callable) {
+        if (this.triggeringEvent === event) {
+            // This event is currently being called, add it to a queue to be registered later.
+            console.debug("Queueing registerEvent because", event, "is currently being triggered.");
+            this.pendingModifications.push({ func: this.registerEvent.bind(this), event: event, callable: callable });
+            return;
+        }
+
         if (event == null) {
             console.error("Trying to register for null event with callback", callable);
             return;
@@ -65,6 +84,13 @@ export default class EventCoordinator {
     }
 
     unregisterEvent(event, callable) {
+        if (this.triggeringEvent === event) {
+            // This event is currently being called, add it to a queue to be unregistered later.
+            console.debug("Queueing unregisterEvent because", event, "is currently being triggered.");
+            this.pendingModifications.push({ func: this.unregisterEvent.bind(this), event: event, callable: callable });
+            return;
+        }
+
         if (event == null) {
             console.error("Trying to unregister from null event with callback", callable);
             return;

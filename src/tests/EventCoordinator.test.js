@@ -139,6 +139,42 @@ test("EventCoordinator.triggerEvent: registrations receive payload", () => {
     expect(callable2Payload).toEqual({ x: { y: 2 } });
 });
 
+test("EventCoordinator.triggerEvent: trigger causing register/unregister should delay calls until after full trigger", () => {
+    let callable1TriggerCount = 0;
+    let callable2TriggerCount = 0;
+    let callable3TriggerCount = 0;
+
+    const evcor = new EventCoordinator();
+    const w = {};
+    evcor.populateWindow(w);
+
+    const callable1 = () => {
+        callable1TriggerCount++;
+        w.ceUnregisterEvent(CEDummyEvent, callable2);
+        w.ceRegisterEvent(CEDummyEvent, callable3);
+
+        // Precondition: make sure #2 has not yet been called on first event.
+        expect(callable1TriggerCount !== 1 || callable2TriggerCount === 0).toBeTruthy();
+    };
+    const callable2 = () => { callable2TriggerCount++; };
+    const callable3 = () => { callable3TriggerCount++; };
+
+    w.ceRegisterEvent(CEDummyEvent, callable1);
+    w.ceRegisterEvent(CEDummyEvent, callable2);
+
+    w.ceTriggerEvent(CEDummyEvent, null);
+
+    expect(callable1TriggerCount).toEqual(1);
+    expect(callable2TriggerCount).toEqual(1);   // Called despite #1 unregistering it.
+    expect(callable3TriggerCount).toEqual(0);   // Not called despite #1 registering it.
+
+    w.ceTriggerEvent(CEDummyEvent, null);
+
+    expect(callable1TriggerCount).toEqual(2);
+    expect(callable2TriggerCount).toEqual(1);   // Not called (was unregistered after delay).
+    expect(callable3TriggerCount).toEqual(1);   // Called (was registered after delay).
+});
+
 
 
 
