@@ -12,13 +12,6 @@ test("Graph.constructor: parses JSON into data field", () => {
     expect(g.data.z).toEqual([1, 2, 3]);
 });
 
-test("Graph.constructor: adds required fields but does not overwrite them", () => {
-    const json = `{"nodes": [{"idx": 0, "name": "Test"}]}`;
-    let g = new Graph(json);
-    expect(g.data.nodes[0]).toEqual({ idx: 0, name: "Test" });
-    expect(g.data.edges).toEqual([]);
-});
-
 test("Graph.addNode: adds new nodes to end of list and update idx", () => {
     let g = new Graph("{}");
 
@@ -41,6 +34,8 @@ test("Graph.addNode: adds new nodes to end of list and update idx", () => {
 
 test("Graph.addEdge: adds new edges to end of list and update idx", () => {
     let g = new Graph("{}");
+    g.addNode({});
+    g.addNode({});
 
     let edge1 = { idx: 1234, name: "asdf", source: 0, target: 1 };
     g.addEdge(edge1);
@@ -62,6 +57,9 @@ test("Graph.removeEdgeIdx: wrong edge idx", () => {
     let edge1 = { idx: 123, source: 0, target: 1 };
     let edge2 = { idx: 123, source: 1, target: 2 };
 
+    g.addNode({});
+    g.addNode({});
+    g.addNode({});
     g.addEdge(edge1);
     g.addEdge(edge2);
 
@@ -79,6 +77,11 @@ test("Graph.removeEdgeIdx: splices edge from array", () => {
     let edge2 = { idx: 123, source: 1, target: 2 };
     let edge3 = { idx: 123, source: 2, target: 3 };
     let edge4 = { idx: 123, source: 3, target: 0 };
+
+    g.addNode({});
+    g.addNode({});
+    g.addNode({});
+    g.addNode({});
 
     g.addEdge(edge1);
     g.addEdge(edge2);

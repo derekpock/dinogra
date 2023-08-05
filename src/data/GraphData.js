@@ -1,26 +1,48 @@
 import { defaultObjectValue } from '../Utilities';
 import semver from 'semver';
 
-// Nodes
-//  x, y, width, height
-//  name, shape, rounding
-
-// Edges
-//  source, target
-//  name
 
 const VERSION = "0.0.1";
 const VERSION_SUPPORTED = "<=1.0.0";
 const KEY_GRAPH_DATA = "graphData";
 
+function defaultNode(node) {
+    // Also required: idx
+    // Also optional: rounding
+    defaultObjectValue(node, "x", 0);
+    defaultObjectValue(node, "y", 0);
+    defaultObjectValue(node, "width", 100);
+    defaultObjectValue(node, "height", 50);
+    defaultObjectValue(node, "name", "");
+    defaultObjectValue(node, "shape", "rectangle");
+}
+
+function defaultEdge(edge) {
+    // Also required: idx, source, target
+    defaultObjectValue(edge, "name", "");
+}
+
+function validateEdge(edge, nodesCount) {
+    let success = true;
+    if (edge.source >= nodesCount) {
+        success = false;
+        console.error("Malformed edge: Idx", edge.idx, "edge has source node of idx", edge.source, "which does not exist. Max is", nodesCount - 1);
+    }
+    if (edge.target >= nodesCount) {
+        success = false;
+        console.error("Malformed edge: Idx", edge.idx, "edge has target node of idx", edge.target, "which does not exist. Max is", nodesCount - 1);
+    }
+    return success;
+}
+
 export class Graph {
     constructor(json = "{}") {
-        this._load_from_string(json);
+        this._loadFromString(json);
     }
 
     load() {
         const graphDataString = window.localStorage.getItem(KEY_GRAPH_DATA);
-        const loadSuccess = this._load_from_string(graphDataString);
+        const loadSuccess = this._loadFromString(graphDataString);
         if (loadSuccess) {
             console.debug("Loaded graphData from localStorage");
         }
@@ -28,7 +50,7 @@ export class Graph {
     }
 
     save() {
-        const graphDataString = this._save_to_string();
+        const graphDataString = this._saveToString();
         try {
             window.localStorage.setItem(KEY_GRAPH_DATA, graphDataString);
             const kb = (graphDataString.length / 1024).toFixed(3);
@@ -42,6 +64,7 @@ export class Graph {
     addNode(node, suppressEvent = false) {
         const idx = this.nodes.push(node) - 1;
         this.nodes[idx].idx = idx;
+        defaultNode(node);
 
         if (!suppressEvent) {
             window.ceTriggerEvent(window.CEGraphDataModified, this);
@@ -52,6 +75,12 @@ export class Graph {
     addEdge(edge, suppressEvent = false) {
         const idx = this.edges.push(edge) - 1;
         this.edges[idx].idx = idx;
+        defaultEdge(edge);
+
+        if (!validateEdge(edge, this.nodes.length)) {
+            this.edges.splice(idx, 1);
+            return;
+        }
 
         if (!suppressEvent) {
             window.ceTriggerEvent(window.CEGraphDataModified, this);
@@ -106,28 +135,57 @@ export class Graph {
         window.ceTriggerEvent(window.CEGraphDataModified, this);
     }
 
-    _load_from_string(str) {
+    _saveToString() {
+        return JSON.stringify(this.data);
+    }
+
+    _loadFromString(str) {
+        let data = undefined;
         try {
-            this.data = JSON.parse(str);
+            data = JSON.parse(str);
         } catch (e) {
             console.warn("Failed to load JSON data:", e);
             return false;
         }
 
-        defaultObjectValue(this.data, "nodes", []);
-        defaultObjectValue(this.data, "edges", []);
-        defaultObjectValue(this.data, "version", VERSION)
+        defaultObjectValue(data, "version", VERSION);
+        defaultObjectValue(data, "nodes", []);
+        defaultObjectValue(data, "edges", []);
+
+        if (!semver.satisfies(data.version, VERSION_SUPPORTED)) {
+            console.warn("Loaded graph data is not a supported version! Continuing regardless.", data.version, "does not satisfy", VERSION_SUPPORTED);
+        }
+
+        // Verify sequence and integrity of nodeIdx and edgeIdx.
+        let error = false;
+        for (let i = 0; i < data.nodes.length; i++) {
+            const node = data.nodes[i];
+            defaultNode(node);
+            if (node.idx !== i) {
+                error = true;
+                console.error("Malformed node: Sequence", i, "has invalid idx", node.idx);
+            }
+        }
+
+        for (let i = 0; i < data.edges.length; i++) {
+            const edge = data.edges[i];
+            defaultEdge(edge);
+            if (edge.idx !== i) {
+                error = true;
+                console.error("Malformed edge: Sequence", i, "has invalid idx", edge.idx);
+            }
+            validateEdge(edge, data.nodes.length);
+        }
+
+        if (error) {
+            return false;
+        }
+
+        this.data = data;
         this.nodes = this.data.nodes;
         this.edges = this.data.edges;
 
-        if (!semver.satisfies(this.data.version, VERSION_SUPPORTED)) {
-            console.warn("Loaded graph data is not a supported version! Continuing regardless.", this.data.version, "does not satisfy", VERSION_SUPPORTED);
-        }
         window.ceTriggerEvent(window.CEGraphDataModified, this);
         return true;
-    }
-
-    _save_to_string() {
-        return JSON.stringify(this.data);
     }
 }

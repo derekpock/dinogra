@@ -134,6 +134,9 @@ export class App extends React.Component {
     registerWindowEvents();
     window.resetGraphData = this.resetGraphData;
     window.populateGraphData = this.populateGraphData;
+    window.saveGraphDataToString = () => {
+      return this.state.graphData._saveToString();
+    }
     window.debugRenderAll = false;
     window.ceRegisterEvent(window.CEGraphDataModified, this.onGraphDataModified);
   }
@@ -143,6 +146,7 @@ export class App extends React.Component {
     unregisterWindowEvents();
     window.resetGraphData = null;
     window.populateGraphData = null;
+    window.saveGraphDataToString = null;
     window.ceUnregisterEvent(window.CEGraphDataModified, this.onGraphDataModified);
   }
 
