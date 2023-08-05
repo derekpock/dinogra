@@ -36,7 +36,7 @@ export default class EventCoordinator {
         }
 
         const eventRegistrations = this.registrations[event];
-        this._log_event(w, event, eventRegistrations);
+        this._log_event(w, event, eventRegistrations, payload);
         if (eventRegistrations == null) {
             return;
         }
@@ -86,12 +86,12 @@ export default class EventCoordinator {
         return true;
     }
 
-    _log_event(w, event, registrations) {
+    _log_event(w, event, registrations, payload) {
         if (w.ceLogAllEvents === true || w.ceLoggedEvents.includes(event)) {
             if (registrations == null) {
-                console.debug("Triggering", event, "0 registrations");
+                console.debug("Triggering", event, "0 registrations", payload);
             } else {
-                console.debug("Triggering", event, registrations.length, "registrations");
+                console.debug("Triggering", event, registrations.length, "registrations", payload);
             }
             if (w.ceLogTrace === true) {
                 console.trace();
