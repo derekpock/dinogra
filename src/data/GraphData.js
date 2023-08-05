@@ -40,8 +40,9 @@ export class Graph {
     }
 
     addNode(node, suppressEvent = false) {
-        const idx = this.data.nodes.push(node) - 1;
-        this.data.nodes[idx].idx = idx;
+        const idx = this.nodes.push(node) - 1;
+        this.nodes[idx].idx = idx;
+
         if (!suppressEvent) {
             window.ceTriggerEvent(window.CEGraphDataModified, this);
             window.ceTriggerEvent(window.CENodeCreated, node);
@@ -49,29 +50,38 @@ export class Graph {
     }
 
     addEdge(edge, suppressEvent = false) {
-        const idx = this.data.edges.push(edge) - 1;
-        this.data.edges[idx].idx = idx;
+        const idx = this.edges.push(edge) - 1;
+        this.edges[idx].idx = idx;
+
         if (!suppressEvent) {
             window.ceTriggerEvent(window.CEGraphDataModified, this);
         }
     }
 
     removeNodeIdx(idx) {
-        const removedNodes = this.data.nodes.splice(idx, 1);
+        const removedNodes = this.nodes.splice(idx, 1);
         if (removedNodes[0]) {
             removedNodes[0].idx = undefined;
         } else {
             console.error("Tried to remove non-present node idx", idx);
         }
 
-        for (let edgeIdx = 0; edgeIdx < this.data.edges.length; edgeIdx++) {
-            const edge = this.data.edges[edgeIdx];
+        for (let i = idx; i < this.nodes.length; i++) {
+            this.nodes[i].idx--;
+        }
+
+        let edgesRemoved = 0;
+        for (let i = 0; i < this.edges.length; i++) {
+            const edge = this.edges[i];
             if ((edge.source === idx) || (edge.target === idx)) {
-                this.removeEdgeIdx(edgeIdx);
-                edgeIdx--;  // Array size decreased, re-check this idx next loop
+                this.edges.splice(i, 1);
+                edge.idx = undefined;
+                edgesRemoved++; // Other edges' idx need decremented by this much.
+                i--;  // Array size decreased, re-check this i next loop.
                 continue;
             }
 
+            edge.idx -= edgesRemoved;
             if (edge.source > idx) {
                 edge.source--;
             }
@@ -83,11 +93,15 @@ export class Graph {
     }
 
     removeEdgeIdx(idx) {
-        const removedEdges = this.data.edges.splice(idx, 1);
+        const removedEdges = this.edges.splice(idx, 1);
         if (removedEdges[0]) {
             removedEdges[0].idx = undefined;
         } else {
             console.error("Tried to remove non-present edge idx", idx);
+        }
+
+        for (let i = idx; i < this.edges.length; i++) {
+            this.edges[i].idx--;
         }
         window.ceTriggerEvent(window.CEGraphDataModified, this);
     }

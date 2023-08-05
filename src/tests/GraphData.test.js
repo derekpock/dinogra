@@ -85,28 +85,33 @@ test("Graph.removeEdgeIdx: splices edge from array", () => {
     g.addEdge(edge3);
     g.addEdge(edge4);
 
+    expect(edge1.idx).toEqual(0);
+    expect(edge2.idx).toEqual(1);
+    expect(edge3.idx).toEqual(2);
+    expect(edge4.idx).toEqual(3);
+
     g.removeEdgeIdx(2);
 
-    expect(edge1.idx).toBeDefined();
-    expect(edge2.idx).toBeDefined();
+    expect(edge1.idx).toEqual(0)
+    expect(edge2.idx).toEqual(1);
     expect(edge3.idx).toBeUndefined();
-    expect(edge4.idx).toBeDefined();
+    expect(edge4.idx).toEqual(2);
 
     expect(g.data.edges[0]).toEqual(edge1);
     expect(g.data.edges[1]).toEqual(edge2);
     expect(g.data.edges[2]).toEqual(edge4);
-    expect(g.data.edges[3]).toEqual(undefined);
+    expect(g.data.edges[3]).toBeUndefined();
 
     g.removeEdgeIdx(0);
 
     expect(edge1.idx).toBeUndefined();
-    expect(edge2.idx).toBeDefined();
+    expect(edge2.idx).toEqual(0);
     expect(edge3.idx).toBeUndefined();
-    expect(edge4.idx).toBeDefined();
+    expect(edge4.idx).toEqual(1);
 
     expect(g.data.edges[0]).toEqual(edge2);
     expect(g.data.edges[1]).toEqual(edge4);
-    expect(g.data.edges[2]).toEqual(undefined);
+    expect(g.data.edges[2]).toBeUndefined();
 });
 
 test("Graph.removeNodeIdx: wrong node idx", () => {
@@ -125,6 +130,7 @@ test("Graph.removeNodeIdx: node with edges", () => {
     let node1 = { idx: 123, name: "nodeOne" };
     let node2 = { idx: 123, name: "nodeTwo" };
     let node3 = { idx: 123, name: "nodeThree" };
+    let node4 = { idx: 123, name: "nodeFour" };
     let edge1 = { idx: 123, source: 0, target: 2 };
     let edge2 = { idx: 123, source: 1, target: 2 };
     let edge3 = { idx: 123, source: 2, target: 1 };
@@ -140,11 +146,21 @@ test("Graph.removeNodeIdx: node with edges", () => {
     g.addEdge(edge4);
     g.addEdge(edge5);
 
+    expect(node1.idx).toEqual(0);
+    expect(node2.idx).toEqual(1);
+    expect(node3.idx).toEqual(2);
+
+    expect(edge1.idx).toEqual(0);
+    expect(edge2.idx).toEqual(1);
+    expect(edge3.idx).toEqual(2);
+    expect(edge4.idx).toEqual(3);
+    expect(edge5.idx).toEqual(4);
+
     g.removeNodeIdx(1);
 
-    expect(node1.idx).toBeDefined();
+    expect(node1.idx).toEqual(0);
     expect(node2.idx).toBeUndefined();
-    expect(node3.idx).toBeDefined();
+    expect(node3.idx).toEqual(1);
 
     expect(g.data.nodes[0]).toEqual(node1);
     expect(g.data.nodes[1]).toEqual(node3);
@@ -162,4 +178,15 @@ test("Graph.removeNodeIdx: node with edges", () => {
     expect(edge4.target).toEqual(1);
     expect(edge5.source).toEqual(1);
     expect(edge5.target).toEqual(0);
+
+    g.addNode(node4);
+
+    expect(node1.idx).toEqual(0);
+    expect(node3.idx).toEqual(1);
+    expect(node4.idx).toEqual(2);
+
+    expect(g.data.nodes[0]).toEqual(node1);
+    expect(g.data.nodes[1]).toEqual(node3);
+    expect(g.data.nodes[2]).toEqual(node4);
+    expect(g.data.nodes[3]).toEqual(undefined);
 });
